@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact Snapshot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .status-card {
+            @apply rounded-lg p-6 shadow-lg border-l-4;
+        }
+        .status-healthy {
+            @apply bg-white border-green-500;
+        }
+        .status-warning {
+            @apply bg-white border-yellow-500;
+        }
+        .status-critical {
+            @apply bg-white border-red-500;
+        }
+        .metric-value {
+            @apply text-3xl font-bold;
+        }
+        .metric-label {
+            @apply text-sm text-gray-600 uppercase tracking-wide;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Impact Snapshot</h1>
+            <p class="text-gray-600">Real-time monitoring of technical issues and business impact</p>
+        </div>
+
+        <!-- Demo Controls -->
+        <div class="mb-6 p-4 bg-white rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-3">Demo Controls</h3>
+            <div class="flex gap-3">
+                <button onclick="injectError('healthy')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    Healthy State
+                </button>
+                <button onclick="injectError('warning')" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                    Warning State
+                </button>
+                <button onclick="injectError('critical')" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    Critical State
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- ARR Risk -->
+            <div id="arr-risk-card" class="status-card status-healthy">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="metric-label">ARR at Risk</p>
+                        <p id="arr-risk-value" class="metric-value text-green-600">$0</p>
+                    </div>
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Error Count -->
+            <div id="error-card" class="status-card status-healthy">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="metric-label">Error Count</p>
+                        <p id="error-count-value" class="metric-value text-green-600">0</p>
+                    </div>
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Conversion Rate -->
+            <div id="conversion-card" class="status-card status-healthy">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="metric-label">Conversion Rate</p>
+                        <p id="conversion-value" class="metric-value text-green-600">85.0%</p>
+                    </div>
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Summary -->
+        <div class="mb-8">
+            <div id="summary-card" class="status-card status-healthy">
+                <h3 class="text-lg font-semibold mb-2">Status Summary</h3>
+                <p id="summary-text" class="text-gray-700">All systems operational. Conversion rate at 85%.</p>
+                <p id="timestamp" class="text-sm text-gray-500 mt-2">Last updated: <span id="last-updated"></span></p>
+            </div>
+        </div>
+
+        <!-- Rollback Button -->
+        <div id="rollback-section" class="mb-8 hidden">
+            <div class="status-card status-critical">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-red-600 mb-2">Immediate Action Required</h3>
+                        <p class="text-gray-700 mb-4">
+                            Critical issues detected. Click below to rollback to the previous stable version.
+                        </p>
+                    </div>
+                    <button onclick="triggerRollback()" class="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Roll Back Release
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Series Chart -->
+        <div class="mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Real-time Metrics</h3>
+                <canvas id="metricsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- QR Code for Mobile -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Mobile Access</h3>
+            <div class="flex items-center gap-6">
+                <div id="qrcode"></div>
+                <div>
+                    <p class="text-gray-600 mb-2">Scan to open on your phone:</p>
+                    <p class="text-sm text-gray-500 font-mono" id="current-url"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 
