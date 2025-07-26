@@ -1,0 +1,71 @@
+{
+  "name": "impact-snapshot",
+  "version": "1.0.0",
+  "description": "Real-time dashboard for detecting error spikes, calculating lost revenue, and offering one-click rollback functionality",
+  "main": "index.js",
+  "scripts": {
+    "setup": "bash setup.sh",
+    "setup:windows": "setup.bat",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && source venv/bin/activate && python -m uvicorn main:app --host 0.0.0.0 --port 8000",
+    "dev:frontend": "cd impact-frontend && npm run dev",
+    "build": "cd impact-frontend && npm run build",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && source venv/bin/activate && python -m pytest",
+    "test:frontend": "cd impact-frontend && npm run test",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+    "install:frontend": "cd impact-frontend && npm install",
+    "clean": "npm run clean:backend && npm run clean:frontend",
+    "clean:backend": "cd backend && rm -rf venv __pycache__ .pytest_cache",
+    "clean:frontend": "cd impact-frontend && rm -rf node_modules dist",
+    "start": "npm run start:backend & npm run start:frontend",
+    "start:backend": "cd backend && source venv/bin/activate && python -m uvicorn main:app --host 0.0.0.0 --port 8000",
+    "start:frontend": "cd impact-frontend && npm run preview",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && source venv/bin/activate && flake8 .",
+    "lint:frontend": "cd impact-frontend && npm run lint",
+    "format": "npm run format:backend && npm run format:frontend",
+    "format:backend": "cd backend && source venv/bin/activate && black .",
+    "format:frontend": "cd impact-frontend && npm run format"
+  },
+  "keywords": [
+    "dashboard",
+    "real-time",
+    "monitoring",
+    "error-detection",
+    "revenue-impact",
+    "rollback",
+    "react",
+    "fastapi",
+    "websocket",
+    "dark-mode",
+    "qr-code"
+  ],
+  "author": "Impact Snapshot Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/impact-snapshot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/impact-snapshot/issues"
+  },
+  "homepage": "https://github.com/your-username/impact-snapshot#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+} 
